@@ -122,8 +122,10 @@ int main(int argc, char* argv[]) {
   Values result = isam2.calculateEstimate();
   result.print("Results:\n");
 
+  // we add new measurements from this pose
+  size_t pose_idx = 3; 
+
   // Now update existing smart factors with new observations
-  size_t pose_idx = 3;
   for(size_t j = 0; j < points.size(); ++j)
   {
     SmartFactor::shared_ptr smartfactor = smart_factors[j];
@@ -135,11 +137,13 @@ int main(int argc, char* argv[]) {
   }
 
   graph.resize(0);
-  // update initial estimate
+  initialEstimate.clear();
+
+  // update initial estimate for the new pose
   initialEstimate.insert(pose_idx, poses[pose_idx].compose(delta));
 
   // this should break the system
-  isam2.update();
+  isam2.update(graph, initialEstimate);
 
   return 0;
 }
